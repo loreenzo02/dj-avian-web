@@ -52,8 +52,7 @@
   }
   /* grayscale photo multiplied over sky blue: black shadows, blue highlights */
   .duo { position: relative; background: var(--sky); overflow: hidden; }
-  .duo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.35) brightness(1.05); mix-blend-mode: multiply; transition: filter .6s, mix-blend-mode .6s; }
-  .duo.hover-color:hover img { filter: none; mix-blend-mode: normal; }
+  .duo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.35) brightness(1.05); mix-blend-mode: multiply; }
 
   /* ---------- preloader ---------- */
   .loader {
@@ -121,7 +120,8 @@
   .menu .bottom .socials svg { width: 22px; height: 22px; }
 
   /* ---------- hero ---------- */
-  .hero { position: relative; height: 200vh; }
+  /* extra height gives the 3D mixer room to fly across before servicios */
+  .hero { position: relative; height: 320vh; }
   .hero-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
   .hero video {
     position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
@@ -149,14 +149,22 @@
     font-size: clamp(70px, 19vw, 320px); letter-spacing: -.03em; line-height: .85;
     white-space: nowrap; will-change: transform, opacity;
   }
-  .band.solid h2 { color: var(--fg); background: var(--bg); padding: .1em .12em .04em; width: 100vw; text-align: center; }
   .band.ghost { position: relative; }
   .band.ghost h2 { color: #6a6a74; font-size: 11.5vw; }
-  /* duotone photo strips that scroll behind the sticky word */
-  .band-photos { position: relative; z-index: 0; margin-top: -100vh; display: flex; flex-direction: column; align-items: center; gap: 12vh; padding-bottom: 10vh; }
-  .band-photos .duo { width: min(46vw, 620px); aspect-ratio: 4/5; }
-  .band-photos .duo:nth-child(2) { align-self: flex-start; margin-left: 8vw; width: min(34vw, 440px); }
-  .band-photos .duo:nth-child(3) { align-self: flex-end; margin-right: 14vw; width: min(36vw, 480px); }
+
+  /* ---------- servicios: pinned stage — photos slide across behind the word ---------- */
+  .svc-pin { position: relative; height: 380vh; }
+  .svc-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; }
+  .svc-photos { position: absolute; left: 0; top: 50%; display: flex; align-items: center; gap: 7vw; will-change: transform; }
+  .svc-photos .duo { flex: 0 0 auto; height: min(68vh, 760px); aspect-ratio: 4/5; }
+  .svc-photos .duo:nth-child(2) { height: min(54vh, 600px); transform: translateY(10vh); }
+  .svc-photos .duo:nth-child(3) { height: min(60vh, 680px); transform: translateY(-8vh); }
+  .svc-title {
+    position: relative; z-index: 1; font-family: var(--display); font-weight: 900; color: var(--fg);
+    font-size: clamp(48px, 16.5vw, 300px); letter-spacing: -.03em; line-height: .85; white-space: nowrap;
+    text-shadow: 0 10px 50px rgba(0,0,0,.5); will-change: transform, opacity; pointer-events: none;
+  }
+  .mixer-fly { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 45; pointer-events: none; visibility: hidden; }
 
   /* ---------- servicios list (dates style) ---------- */
   .dates {
@@ -171,25 +179,32 @@
   .date .meta span { display: block; font-weight: 500; color: #cfcfcf; }
   .date:hover .num { color: var(--blue); }
 
-  /* ---------- experiencias / feature slides ---------- */
+  /* ---------- experiencias: full-screen cards that stack as you scroll ---------- */
   .features { position: relative; z-index: 2; background: var(--bg); }
   .feature {
-    position: relative; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center;
-    gap: 6vw; padding: 120px 140px 120px 6vw; overflow: hidden;
+    position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg);
+    display: flex; align-items: flex-end; padding: 0 140px 10vh 6vw; transform-origin: 50% 0; will-change: transform;
   }
-  .feature .card-img { position: relative; aspect-ratio: 16/10; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
-  .feature .card-img img { transition: transform .8s, filter .6s; }
-  .feature:hover .card-img img { transform: scale(1.05); }
-  .feature .txt { position: relative; }
+  .feature::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(5,5,7,.92), rgba(5,5,7,.25) 55%, rgba(5,5,7,.1)); }
+  .feature .card-img { position: absolute; inset: 0; }
+  .feature .card-img img { transition: transform 1.2s; }
+  .feature:hover .card-img img { transform: scale(1.04); }
+  .feature .txt { position: static; z-index: 2; max-width: 640px; }
+  .feature .txt > * { position: relative; z-index: 2; }
+  .feature .idx {
+    position: absolute; right: 140px; top: 13vh; z-index: 2; font-family: var(--display); font-weight: 900;
+    font-size: clamp(90px, 15vw, 250px); line-height: .8; color: var(--fg); text-shadow: 0 10px 40px rgba(0,0,0,.4);
+  }
+  .feature .idx small { font-size: .2em; color: var(--sky); margin-left: .2em; }
   .feature .kick { font-size: 12px; font-weight: 800; color: var(--sky); letter-spacing: .12em; }
-  .feature h3 { font-family: var(--display); font-weight: 900; font-size: clamp(40px, 5.4vw, 86px); letter-spacing: -.02em; line-height: .95; margin: 12px 0 22px; text-transform: uppercase; }
-  .feature p { font-size: 15px; line-height: 1.55; max-width: 480px; color: #e6e6e6; }
+  .feature h3 { font-family: var(--display); font-weight: 900; font-size: clamp(48px, 8vw, 140px); letter-spacing: -.02em; line-height: .88; margin: 12px 0 22px; text-transform: uppercase; }
+  .feature p { font-size: 16px; line-height: 1.55; max-width: 480px; color: #e6e6e6; }
   .pill {
     display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; border: 1px solid #fff; border-radius: 999px;
     padding: 7px 16px; font-size: 12px; font-weight: 700; transition: background .2s, color .2s;
   }
   .pill:hover { background: #fff; color: #000; }
-  .feature .stamp { position: absolute; right: 0; bottom: -60px; font-size: 13px; font-weight: 700; }
+  .feature .stamp { position: absolute; right: 140px; bottom: 10vh; z-index: 2; font-size: 13px; font-weight: 700; }
   .see-all { display: flex; justify-content: flex-end; padding: 28px 140px 60px; font-size: 14px; font-weight: 700; gap: 10px; }
   .see-all a:hover { color: var(--sky); }
 
@@ -215,8 +230,15 @@
   .rcard small { font-size: 11px; color: #777; margin-top: 8px; }
 
   /* ---------- video banner ---------- */
-  .vbanner { position: relative; height: 100vh; height: 100svh; overflow: hidden; }
+  .vbanner { position: relative; height: 100vh; height: 100svh; overflow: hidden; overflow: clip; }
   .vbanner video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .vbanner .yt { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s; pointer-events: none; }
+  .vbanner .yt.ready { opacity: 1; }
+  /* cover the section like object-fit; the slight zoom hides YouTube's edge chrome */
+  .vbanner .yt iframe {
+    position: absolute; top: 50%; left: 50%; border: 0;
+    width: max(100%, 177.78vh); height: max(100%, 56.25vw); transform: translate(-50%, -50%) scale(1.15);
+  }
   .vbanner .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,5,7,.85), transparent 55%); z-index: 1; }
   .vbanner .cap { position: absolute; left: 28px; right: 140px; bottom: 40px; z-index: 4; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
   .vbanner h2 { font-family: var(--display); font-weight: 900; font-size: clamp(48px, 9vw, 150px); line-height: .85; letter-spacing: -.02em; }
@@ -241,39 +263,67 @@
   .torn.bottom { transform: scaleY(-1); }
   .shop { background: var(--blue); }
   .shop .m-blue { background: var(--bg); }
-  .packs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 50px 140px 70px 28px; }
-  .pack { text-align: center; color: #fff; }
-  .pack .ph { aspect-ratio: 1; overflow: hidden; background: #000; position: relative; }
-  .pack .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
-  .pack:hover .ph img { transform: scale(1.06) rotate(-1deg); }
-  .pack .badge { position: absolute; top: 10px; left: 10px; background: #fff; color: var(--blue); font-size: 10px; font-weight: 900; padding: 4px 8px; letter-spacing: .06em; }
-  .pack h4 { font-family: var(--display); font-weight: 900; font-size: 22px; margin: 18px 0 6px; }
-  .pack .tag { font-size: 12.5px; opacity: .9; min-height: 3.2em; line-height: 1.35; padding: 0 6px; }
-  .pack button {
-    margin-top: 12px; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #fff; background: none; color: #fff;
-    font-size: 18px; line-height: 1; cursor: pointer; transition: transform .3s, background .2s, color .2s;
+  /* dark cards on the blue band; each one shows what it adds, with sound / light / smoke meters to compare at a glance */
+  .packs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: stretch; padding: 70px 140px 50px; }
+  .pack {
+    display: flex; flex-direction: column; background: var(--bg); color: var(--fg);
+    transition: transform .3s; box-shadow: 0 30px 60px rgba(0,0,0,.25);
   }
-  .pack button:hover { background: #fff; color: var(--blue); }
-  .pack.open button { transform: rotate(45deg); }
-  .pack ul { list-style: none; text-align: left; font-size: 12.5px; line-height: 1.4; max-height: 0; overflow: hidden; transition: max-height .5s; }
-  .pack.open ul { max-height: 420px; }
-  .pack li { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.3); }
-  .pack li:first-child { margin-top: 12px; }
+  .pack:hover { transform: translateY(-6px); }
+  .pack.top { background: #fff; color: #000; position: relative; top: -16px; }
+
+  .pack .ph { aspect-ratio: 4/3; overflow: hidden; background: #000; position: relative; }
+  .pack .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+  .pack:hover .ph img { transform: scale(1.06); }
+  .pack .lvl {
+    position: absolute; left: 12px; bottom: 10px; font-family: var(--display); font-weight: 900; font-size: 54px; line-height: .8;
+    color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,.6);
+  }
+  .pack .badge { position: absolute; top: 12px; right: 12px; background: var(--blue); color: #fff; font-size: 10px; font-weight: 900; padding: 5px 9px; letter-spacing: .06em; }
+  .pack .body { display: flex; flex-direction: column; flex: 1; padding: 20px 20px 22px; }
+  .pack h4 { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1; }
+  .pack .tag { font-size: 13px; line-height: 1.4; margin-top: 8px; opacity: .75; min-height: 3.6em; }
+  .meter { margin: 16px 0 6px; display: grid; gap: 8px; }
+  .meter div { display: grid; grid-template-columns: 62px 1fr; align-items: center; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; }
+  .meter dd { display: flex; gap: 4px; }
+  .meter i { flex: 1; height: 7px; background: currentColor; opacity: .14; }
+  .meter i.on { background: var(--blue); opacity: 1; }
+  .pack ul { list-style: none; font-size: 13px; line-height: 1.35; margin: 10px 0 18px; flex: 1; }
+  .pack li { padding: 8px 0 8px 20px; border-top: 1px solid rgba(128,128,140,.25); position: relative; }
+  .pack li::before { content: "+"; position: absolute; left: 0; color: var(--blue); font-weight: 900; }
+  .pack .pick {
+    display: flex; justify-content: space-between; align-items: center; padding: 13px 18px; border-radius: 999px;
+    border: 1.5px solid currentColor; font-size: 12px; font-weight: 800; letter-spacing: .04em; transition: background .2s, color .2s, border-color .2s;
+  }
+  .pack .pick:hover, .pack.top .pick { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .pack.top .pick:hover { background: #000; border-color: #000; }
+  .packs-dots { display: none; }
+  .all-in { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 10px 140px 50px; color: #fff; }
+  .all-in b { width: 100%; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: .12em; margin-bottom: 4px; }
+  .all-in span { border: 1.5px solid rgba(255,255,255,.7); border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 700; }
   .shop-note { text-align: center; color: #fff; padding: 0 20px 60px; max-width: 760px; margin: 0 auto; font-size: 14px; line-height: 1.5; }
   .shop-note b { display: block; font-family: var(--display); font-weight: 900; font-size: 26px; margin-bottom: 8px; }
   .shop-note .cta { border-color: #fff; }
   .shop-note .cta:hover { color: var(--blue); }
 
-  /* ---------- pinned horizontal gallery ---------- */
-  .gallery { position: relative; height: 320vh; }
-  .gallery-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; padding-top: 110px; }
-  .gallery-head { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 140px 26px 28px; }
+  /* ---------- auto-scrolling, draggable gallery ---------- */
+  .gallery { position: relative; padding: 16vh 0 12vh; }
+  .gallery-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 0 140px 26px 28px; }
   .gallery-head h2 { font-family: var(--display); font-weight: 900; font-size: clamp(46px, 7vw, 110px); line-height: .85; }
+  .gallery-head .ctrl { display: flex; align-items: center; gap: 14px; }
   .gallery-head .count { font-family: var(--display); font-size: 22px; color: var(--sky); }
-  .g-track { display: flex; gap: 18px; padding: 0 28px; will-change: transform; }
-  .g-item { flex: 0 0 auto; height: 52vh; aspect-ratio: 4/5; }
-  .g-item:nth-child(3n+2) { aspect-ratio: 16/11; }
+  .g-btn {
+    width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--fg); background: none; color: var(--fg);
+    font-size: 18px; cursor: pointer; transition: background .2s, color .2s;
+  }
+  .g-btn:hover { background: var(--fg); color: #000; }
+  .g-view { overflow: hidden; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .g-view.dragging { cursor: grabbing; }
+  .g-track { display: flex; align-items: flex-start; width: max-content; will-change: transform; }
+  .g-item { flex: 0 0 auto; height: 52vh; aspect-ratio: 4/5; margin-right: 18px; }
+  .g-item.wide { aspect-ratio: 16/11; }
   .g-item:nth-child(even) { margin-top: 6vh; }
+  .g-item img { pointer-events: none; -webkit-user-drag: none; }
 
   /* ---------- explicit / faq + contacto ---------- */
   .m-explicit { padding: 6px 0; border-top: 1px solid #222; border-bottom: 1px solid #222; }
@@ -305,7 +355,7 @@
   .faq summary:hover { color: var(--sky); }
   .faq p { padding: 0 0 20px; color: #bdbdbd; font-size: 14px; line-height: 1.5; }
 
-  .form-sec { padding: 0 140px 120px 9vw; display: grid; grid-template-columns: 1fr 1.4fr; gap: 6vw; align-items: start; }
+  .form-sec { scroll-margin-top: 90px; padding: 0 140px 120px 9vw; display: grid; grid-template-columns: 1fr 1.4fr; gap: 6vw; align-items: start; }
   .form-sec h3 { font-family: var(--display); font-weight: 900; font-size: clamp(36px, 4.4vw, 64px); letter-spacing: -.02em; line-height: .95; }
   .form-sec p { margin-top: 16px; color: #bdbdbd; font-size: 14px; line-height: 1.5; }
   .form-box { background: #fff; border-radius: 4px; overflow: hidden; }
@@ -326,10 +376,12 @@
   .ftr-side .legal a:hover, .ftr-side .soc a:hover { color: var(--sky); }
   .ftr-side .soc { display: flex; flex-direction: column; gap: 16px; }
   .ftr-side .soc svg { width: 17px; height: 17px; fill: currentColor; }
-  .giant { flex: 1; font-family: var(--display); font-size: clamp(90px, 19vw, 320px); letter-spacing: -.03em; line-height: .8; }
-  .giant span { display: block; }
-  .giant span:nth-child(2) { clip-path: inset(0 0 45% 0); color: var(--blue); }
-  .giant span:nth-child(3) { clip-path: inset(0 0 70% 0); }
+  .giant { flex: 1; align-self: center; font-family: var(--display); font-size: clamp(80px, 17vw, 300px); letter-spacing: -.03em; line-height: .86; }
+  /* each word rises into place when the footer comes into view */
+  .giant span { display: block; opacity: 0; transform: translateY(.35em); transition: opacity .9s, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .giant.in span { opacity: 1; transform: none; }
+  .giant span:nth-child(2) { color: var(--blue); transition-delay: .12s; }
+  .giant span:nth-child(3) { transition-delay: .24s; }
   .ftr-info { position: absolute; right: 140px; bottom: 50px; text-align: right; font-size: 12px; line-height: 1.7; color: var(--muted); }
   .ftr-info a { color: var(--fg); font-weight: 700; }
   .ftr-info a:hover { color: var(--sky); }
@@ -353,10 +405,12 @@
   @media (max-width: 1000px) {
     .rail { display: none; }
     .dates { grid-template-columns: repeat(2, 1fr); padding: 4vh 28px 20vh; }
-    .feature { grid-template-columns: 1fr; padding: 110px 28px 90px; gap: 34px; }
-    .feature .stamp { position: static; margin-top: 20px; }
+    .feature { padding: 0 28px 10vh; }
+    .feature .idx { right: 28px; }
+    .feature .stamp { display: none; }
     .see-all { padding: 20px 28px 60px; }
-    .packs { grid-template-columns: repeat(2, 1fr); padding-right: 28px; }
+    .packs { grid-template-columns: repeat(2, 1fr); padding-left: 28px; padding-right: 28px; gap: 36px 20px; }
+    .all-in { padding-left: 28px; padding-right: 28px; }
     .after, .form-sec { grid-template-columns: 1fr; padding-left: 28px; padding-right: 28px; }
     .after-img { padding: 70px 28px 0; }
     .gallery-head { padding-right: 28px; }
@@ -379,25 +433,49 @@
     .burger.x i:first-child { transform: rotate(45deg); }
     .burger.x i:last-child { transform: rotate(-45deg); }
 
-    .hero { height: 160vh; }
+    .hero { height: 280vh; }
     .hero-logo { width: 78vw; }
     .hero-sub { font-size: 11px; letter-spacing: .25em; }
     .band h2 { font-size: 21vw; }
-    .band-photos { gap: 8vh; }
-    .band-photos .duo, .band-photos .duo:nth-child(2), .band-photos .duo:nth-child(3) { width: 62vw; margin: 0; }
-    .band-photos .duo:nth-child(2) { align-self: flex-start; margin-left: 16px; }
-    .band-photos .duo:nth-child(3) { align-self: flex-end; margin-right: 16px; }
+    .svc-pin { height: 320vh; }
+    .svc-title { font-size: 16.5vw; }
+    .svc-photos { gap: 10vw; }
+    .svc-photos .duo { height: 52vh; }
+    .svc-photos .duo:nth-child(2) { height: 42vh; }
+    .svc-photos .duo:nth-child(3) { height: 46vh; }
     .dates { grid-template-columns: 1fr; padding: 4vh 16px 18vh; gap: 6px; }
-    .feature { padding: 96px 16px 70px; min-height: auto; }
-    .feature h3 { font-size: 44px; }
+    .feature { padding: 0 16px 12vh; }
+    .feature .idx { right: 16px; top: 92px; }
+    .feature p { font-size: 14px; }
+    .feature h3 { font-size: 13vw; }
     .see-all { padding: 10px 16px 50px; justify-content: flex-start; }
     .rcard { width: 270px; }
     .vbanner .cap { left: 16px; right: 16px; bottom: 96px; }
     .drop { padding-top: 14vh; }
-    .packs { grid-template-columns: 1fr; padding: 40px 16px 60px; gap: 40px; }
-    .gallery { height: 400vh; }
-    .gallery-head { padding: 0 16px 20px; }
-    .g-track { padding: 0 16px; gap: 12px; }
+    /* pinned on phones: vertical scroll walks through the cards one at a time */
+    .packs-pin { height: 340vh; }
+    .packs-stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+    .packs { display: flex; gap: 14px; padding: 0 8vw; will-change: transform; }
+    .pack { flex: 0 0 84vw; }
+    .pack.top { top: 0; }
+    .pack:hover { transform: none; }
+    .pack .ph { aspect-ratio: 16/10; }
+    .pack .lvl { font-size: 44px; }
+    .pack .body { padding: 16px 18px 18px; }
+    .pack h4 { font-size: 22px; }
+    .pack .tag { min-height: 0; font-size: 12.5px; }
+    .meter { margin: 12px 0 4px; gap: 6px; }
+    .pack ul { margin: 8px 0 14px; font-size: 12.5px; }
+    .pack li { padding: 6px 0 6px 18px; }
+    .pack .pick { padding: 11px 16px; }
+    .packs-dots { display: flex; justify-content: center; gap: 6px; margin-top: 18px; }
+    .packs-dots i { width: 22px; height: 3px; background: rgba(255,255,255,.35); transition: background .3s; }
+    .packs-dots i.on { background: #fff; }
+    .all-in { padding: 0 16px 40px; }
+    .gallery { padding: 12vh 0 10vh; }
+    .gallery-head { padding: 0 16px 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+    .g-item { margin-right: 12px; }
+    .g-btn { width: 38px; height: 38px; }
     .g-item { height: 52vh; }
     .after { gap: 40px; padding: 70px 16px 80px; }
     .form-sec { padding: 0 16px 90px; }
@@ -407,7 +485,7 @@
     .form-box iframe { height: 900px; }
     .insta .label, .insta .handles { padding-left: 16px; padding-right: 16px; }
     .ftr { padding: 40px 16px 110px; flex-direction: column-reverse; min-height: auto; }
-    .giant { font-size: 30vw; }
+    .giant { font-size: 22vw; }
     .ftr-side { flex-direction: row; align-items: flex-end; justify-content: space-between; padding: 30px 0 0; }
     .ftr-side .soc { flex-direction: row; }
     .ftr-info { position: static; text-align: left; margin-top: 30px; order: -1; }
@@ -416,7 +494,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .marquee .track, .scroll-ind i, .next .dot, .loader img { animation: none; }
-    .rv { opacity: 1; transform: none; }
+    .rv, .giant span { opacity: 1; transform: none; }
   }
 </style>
 </head>
@@ -459,10 +537,13 @@
   <div class="next upper">
     <div><span class="dot"></span>↗ [ Temporada 2027 ]</div>
     <div>Reservando fechas — Madrid</div>
-    <a class="cta" href="#contacto">Pide tu presupuesto <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
+    <a class="cta" href="#reserva">Pide tu presupuesto <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
   </div>
   <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
 </header>
+
+<!-- 3D mixer that flies across the hero once the logo has faded -->
+<canvas class="mixer-fly" id="mixer" aria-hidden="true"></canvas>
 
 <!-- mobile menu -->
 <div class="menu" id="menu" aria-hidden="true">
@@ -489,7 +570,7 @@
       <a href="tel:+34711278162" aria-label="Llamar"><svg><use href="#i-tel"/></svg></a>
       <a href="mailto:info@aviandj.com" aria-label="Email"><svg><use href="#i-mail"/></svg></a>
     </div>
-    <a class="cta upper" href="#contacto" style="margin:0">Presupuesto <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
+    <a class="cta upper" href="#reserva" style="margin:0">Presupuesto <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
   </div>
 </div>
 
@@ -522,12 +603,16 @@
 </section>
 
 <!-- ============ SERVICIOS ============ -->
-<section id="servicios" class="band-wrap">
-  <div class="band solid"><h2 class="scaler upper">Servicios</h2></div>
-  <div class="band-photos">
-    <div class="duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/IMG-20250910-WA0010.jpg" alt="" loading="lazy"></div>
-    <div class="duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-fiesta-15-anos-cabina.jpg" alt="" loading="lazy"></div>
-    <div class="duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-1-scaled.jpg" alt="" loading="lazy"></div>
+<section id="servicios">
+  <div class="svc-pin" id="svcPin">
+    <div class="svc-stage">
+      <div class="svc-photos" id="svcPhotos">
+        <div class="duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/IMG-20250910-WA0010.jpg" alt=""></div>
+        <div class="duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-fiesta-15-anos-cabina.jpg" alt=""></div>
+        <div class="duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-1-scaled.jpg" alt=""></div>
+      </div>
+      <h2 class="svc-title upper" id="svcTitle">Servicios</h2>
+    </div>
   </div>
   <div class="dates">
     <a class="date" href="https://aviandj.com/dj-para-bodas-en-madrid/"><span class="num">01</span><span class="meta upper">Bodas<span>Ceremonia · cóctel · fiesta</span></span></a>
@@ -538,7 +623,7 @@
     <a class="date" href="https://aviandj.com/dj-para-fiestas-de-empresa/"><span class="num">06</span><span class="meta upper">Empresa<span>Cenas · afterworks</span></span></a>
     <a class="date" href="https://aviandj.com/eventos-dj-avian/"><span class="num">07</span><span class="meta upper">Eventos<span>Presentaciones · galas</span></span></a>
     <a class="date" href="https://aviandj.com/dj-para-comuniones-madrid/"><span class="num">08</span><span class="meta upper">Comuniones<span>Madrid</span></span></a>
-    <a class="date" href="#contacto"><span class="num">+</span><span class="meta upper">Tu evento<span>Madrid · Segovia · Toledo…</span></span></a>
+    <a class="date" href="#reserva"><span class="num">+</span><span class="meta upper">Tu evento<span>Madrid · Segovia · Toledo…</span></span></a>
   </div>
 </section>
 
@@ -547,7 +632,8 @@
   <div class="band ghost"><h2 class="scaler upper">Experiencias</h2></div>
   <div class="features">
     <article class="feature">
-      <div class="card-img duo hover-color grain rv"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-bodas-madrid-11.jpg" alt="DJ Avian en una boda en Madrid" loading="lazy"></div>
+      <div class="idx" aria-hidden="true">01<small>/04</small></div>
+      <div class="card-img duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-bodas-madrid-11.jpg" alt="DJ Avian en una boda en Madrid" loading="lazy"></div>
       <div class="txt rv">
         <div class="kick upper">Bodas</div>
         <h3>Tu boda,<br>un fiestón</h3>
@@ -557,7 +643,8 @@
       </div>
     </article>
     <article class="feature">
-      <div class="card-img duo hover-color grain rv"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-fiesta-15-anos-cabina.jpg" alt="Cabina de DJ Avian en una fiesta de 15 años" loading="lazy"></div>
+      <div class="idx" aria-hidden="true">02<small>/04</small></div>
+      <div class="card-img duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-fiesta-15-anos-cabina.jpg" alt="Cabina de DJ Avian en una fiesta de 15 años" loading="lazy"></div>
       <div class="txt rv">
         <div class="kick upper">Fiestas de 15 años</div>
         <h3>La pista<br>no para</h3>
@@ -567,7 +654,8 @@
       </div>
     </article>
     <article class="feature">
-      <div class="card-img duo hover-color grain rv"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-evento-salon-iluminacion.jpg" alt="Evento con iluminación de DJ Avian" loading="lazy"></div>
+      <div class="idx" aria-hidden="true">03<small>/04</small></div>
+      <div class="card-img duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-evento-salon-iluminacion.jpg" alt="Evento con iluminación de DJ Avian" loading="lazy"></div>
       <div class="txt rv">
         <div class="kick upper">Eventos y empresa</div>
         <h3>Luces,<br>humo y show</h3>
@@ -577,7 +665,8 @@
       </div>
     </article>
     <article class="feature">
-      <div class="card-img duo hover-color grain rv"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-montaje-fiesta-privada.jpg" alt="Montaje de DJ Avian para una fiesta privada" loading="lazy"></div>
+      <div class="idx" aria-hidden="true">04<small>/04</small></div>
+      <div class="card-img duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-montaje-fiesta-privada.jpg" alt="Montaje de DJ Avian para una fiesta privada" loading="lazy"></div>
       <div class="txt rv">
         <div class="kick upper">Pueblos y privadas</div>
         <h3>Discomóvil<br>completa</h3>
@@ -601,6 +690,8 @@
   <video id="liveVideo" muted loop playsinline preload="metadata" poster="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-evento-salon-iluminacion.jpg">
     <source src="https://aviandj.com/wp-content/uploads/2025/12/video-presskit-e-inicio.mp4" type="video/mp4">
   </video>
+  <!-- live set with real audio (the mp4 above has a silent track); fades in over the mp4 once it is playing -->
+  <div class="yt"><iframe id="ytLive" src="https://www.youtube-nocookie.com/embed/6-E7rQHCEeg?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=6-E7rQHCEeg&amp;controls=0&amp;rel=0&amp;playsinline=1&amp;enablejsapi=1" allow="autoplay; encrypted-media" title="DJ Avian en Rita La Bailaora" tabindex="-1" loading="lazy"></iframe></div>
   <div class="shade"></div>
   <div class="cap">
     <h2 class="upper">Así suena<br><em>un fiestón</em></h2>
@@ -617,52 +708,77 @@
   <div class="torn"></div>
   <div class="shop">
     <div class="marquee m-blue"><div class="track upper" id="packTrack"></div></div>
+    <!-- on phones this pins and the cards pass one by one as you scroll -->
+    <div class="packs-pin" id="packsPin"><div class="packs-stick">
     <div class="packs">
-      <div class="pack rv">
-        <div class="ph"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-sonido-dj-avian.jpg" alt="Pack Sonido" loading="lazy"></div>
-        <h4 class="upper">Pack Sonido</h4>
-        <div class="tag">Para eventos de día o lugares que ya tienen iluminación de fiesta.</div>
-        <button aria-label="Ver qué incluye el Pack Sonido" aria-expanded="false">+</button>
-        <ul>
-          <li>2 altavoces RCF 715 de 15"</li><li>Mesa y equipo DJ Pioneer</li><li>Dos micrófonos inalámbricos</li>
-          <li>Servicio de DJ durante 4 horas</li><li>Música preparada a medida</li><li>Planificación del timing y coordinación</li>
-        </ul>
-      </div>
-      <div class="pack rv">
-        <div class="ph"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-esencial-dj-avian.jpg" alt="Pack Esencial" loading="lazy"></div>
-        <h4 class="upper">Pack Esencial</h4>
-        <div class="tag">Fiestas de tarde o espacios con iluminación ambiental.</div>
-        <button aria-label="Ver qué incluye el Pack Esencial" aria-expanded="false">+</button>
-        <ul>
-          <li>2 altavoces RCF 715 de 15"</li><li>Cabina de DJ de metal y equipo Pioneer</li><li>Dos micrófonos inalámbricos</li>
-          <li>2 focos móviles grandes en la cabina</li><li>Servicio de DJ durante 4 horas</li><li>Música preparada a medida</li><li>Planificación del timing y coordinación</li>
-        </ul>
-      </div>
-      <div class="pack rv">
-        <div class="ph"><span class="badge upper">El más pedido</span><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-premium-dj-avian.jpg" alt="Pack Premium" loading="lazy"></div>
-        <h4 class="upper">Pack Premium</h4>
-        <div class="tag">La opción más equilibrada. Iluminación muy completa.</div>
-        <button aria-label="Ver qué incluye el Pack Premium" aria-expanded="false">+</button>
-        <ul>
-          <li>2 altavoces RCF 715 de 15" + uno de 8"</li><li>Cabina de DJ de metal y equipo Pioneer</li><li>Dos micrófonos inalámbricos</li>
-          <li>Trípode en T con 4 focos móviles y 2 barras LED</li><li>Máquina de humo vertical</li><li>Servicio de DJ durante 4 horas</li><li>Música preparada a medida</li>
-        </ul>
-      </div>
-      <div class="pack rv">
-        <div class="ph"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-deluxe-dj-avian.jpg" alt="Pack Deluxe" loading="lazy"></div>
-        <h4 class="upper">Pack Deluxe</h4>
-        <div class="tag">Nuestro montaje más completo. Un show de luces inolvidable.</div>
-        <button aria-label="Ver qué incluye el Pack Deluxe" aria-expanded="false">+</button>
-        <ul>
-          <li>2 altavoces RCF 715 de 15" + uno de 8"</li><li>Cabina de DJ de metal y equipo Pioneer</li><li>Dos micrófonos inalámbricos</li>
-          <li>Puente de luces con 10 focos móviles y 2 barras LED</li><li>Dos máquinas de humo verticales</li><li>Servicio de DJ durante 4 horas</li><li>Música preparada a medida</li>
-        </ul>
-      </div>
+      <article class="pack">
+        <div class="ph"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-sonido-dj-avian.jpg" alt="Montaje del Pack Sonido" loading="lazy"><span class="lvl" aria-hidden="true">01</span></div>
+        <div class="body">
+          <h4 class="upper">Pack Sonido</h4>
+          <p class="tag">Para eventos de día o lugares que ya tienen iluminación de fiesta.</p>
+          <dl class="meter upper">
+            <div><dt>Sonido</dt><dd data-v="2" data-max="3" aria-label="2 de 3"></dd></div>
+            <div><dt>Luces</dt><dd data-v="0" data-max="3" aria-label="0 de 3"></dd></div>
+            <div><dt>Humo</dt><dd data-v="0" data-max="2" aria-label="0 de 2"></dd></div>
+          </dl>
+          <ul><li>Formato compacto: mesa DJ sin cabina</li><li>Perfecto si el espacio ya tiene luces de fiesta</li></ul>
+          <a class="pick upper" href="#reserva">Lo quiero <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+      <article class="pack">
+        <div class="ph"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-esencial-dj-avian.jpg" alt="Montaje del Pack Esencial" loading="lazy"><span class="lvl" aria-hidden="true">02</span></div>
+        <div class="body">
+          <h4 class="upper">Pack Esencial</h4>
+          <p class="tag">Fiestas de tarde o espacios con iluminación ambiental.</p>
+          <dl class="meter upper">
+            <div><dt>Sonido</dt><dd data-v="2" data-max="3" aria-label="2 de 3"></dd></div>
+            <div><dt>Luces</dt><dd data-v="1" data-max="3" aria-label="1 de 3"></dd></div>
+            <div><dt>Humo</dt><dd data-v="0" data-max="2" aria-label="0 de 2"></dd></div>
+          </dl>
+          <ul><li>Cabina de DJ de metal</li><li>2 focos móviles grandes en la cabina</li></ul>
+          <a class="pick upper" href="#reserva">Lo quiero <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+      <article class="pack top">
+        <div class="ph"><span class="badge upper">El más pedido</span><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-premium-dj-avian.jpg" alt="Montaje del Pack Premium" loading="lazy"><span class="lvl" aria-hidden="true">03</span></div>
+        <div class="body">
+          <h4 class="upper">Pack Premium</h4>
+          <p class="tag">La opción más equilibrada. Iluminación muy completa.</p>
+          <dl class="meter upper">
+            <div><dt>Sonido</dt><dd data-v="3" data-max="3" aria-label="3 de 3"></dd></div>
+            <div><dt>Luces</dt><dd data-v="2" data-max="3" aria-label="2 de 3"></dd></div>
+            <div><dt>Humo</dt><dd data-v="1" data-max="2" aria-label="1 de 2"></dd></div>
+          </dl>
+          <ul><li>Cabina de DJ de metal</li><li>Altavoz extra de 8"</li><li>Trípode en T con 4 focos móviles y 2 barras LED</li><li>Máquina de humo vertical</li></ul>
+          <a class="pick upper" href="#reserva">Lo quiero <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+      <article class="pack">
+        <div class="ph"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-deluxe-dj-avian.jpg" alt="Montaje del Pack Deluxe" loading="lazy"><span class="lvl" aria-hidden="true">04</span></div>
+        <div class="body">
+          <h4 class="upper">Pack Deluxe</h4>
+          <p class="tag">Nuestro montaje más completo. Un show de luces inolvidable.</p>
+          <dl class="meter upper">
+            <div><dt>Sonido</dt><dd data-v="3" data-max="3" aria-label="3 de 3"></dd></div>
+            <div><dt>Luces</dt><dd data-v="3" data-max="3" aria-label="3 de 3"></dd></div>
+            <div><dt>Humo</dt><dd data-v="2" data-max="2" aria-label="2 de 2"></dd></div>
+          </dl>
+          <ul><li>Cabina de DJ de metal</li><li>Altavoz extra de 8"</li><li>Puente de luces con 10 focos móviles y 2 barras LED</li><li>Dos máquinas de humo verticales</li></ul>
+          <a class="pick upper" href="#reserva">Lo quiero <svg width="12" height="12"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+    </div>
+    <div class="packs-dots" id="packsDots" aria-hidden="true"></div>
+    </div></div>
+    <div class="all-in">
+      <b class="upper">Incluido en todos los packs</b>
+      <span>2 altavoces RCF 715 de 15"</span><span>Equipo DJ Pioneer</span><span>2 micrófonos inalámbricos</span>
+      <span>DJ durante 4 horas</span><span>Música preparada a medida</span><span>Planificación del timing</span>
     </div>
     <div class="shop-note">
       <b class="upper">¿No lo tienes claro?</b>
       Cuéntanos cómo será el espacio, si es interior o exterior y cuántos invitados habrá. Todos los packs son personalizables: los combinamos o preparamos una propuesta a medida.
-      <div><a class="cta upper" href="#contacto">Pide tu presupuesto <svg width="12" height="12"><use href="#i-arrow"/></svg></a></div>
+      <div><a class="cta upper" href="#reserva">Pide tu presupuesto <svg width="12" height="12"><use href="#i-arrow"/></svg></a></div>
     </div>
   </div>
   <div class="torn bottom"></div>
@@ -670,22 +786,26 @@
 
 <!-- ============ GALERÍA ============ -->
 <section id="galeria" class="gallery">
-  <div class="gallery-sticky">
-    <div class="gallery-head">
-      <h2 class="upper">Galería</h2>
+  <div class="gallery-head">
+    <h2 class="upper">Galería</h2>
+    <div class="ctrl">
       <div class="count"><span id="gCount">01</span> / <span id="gTotal">10</span></div>
+      <button class="g-btn" id="gPrev" aria-label="Foto anterior">←</button>
+      <button class="g-btn" id="gNext" aria-label="Foto siguiente">→</button>
     </div>
+  </div>
+  <div class="g-view" id="gView">
     <div class="g-track" id="gTrack">
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-1-scaled.jpg" alt="DJ Avian pinchando" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-bodas-madrid-11.jpg" alt="Fiesta de boda con DJ Avian" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-deluxe-dj-avian.jpg" alt="Montaje Pack Deluxe" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-fiesta-15-anos-cabina.jpg" alt="Cabina en fiesta de 15 años" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-evento-salon-iluminacion.jpg" alt="Salón con iluminación de fiesta" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/IMG-20250910-WA0010.jpg" alt="DJ Avian en un evento" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-premium-dj-avian.jpg" alt="Montaje Pack Premium" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-montaje-fiesta-privada.jpg" alt="Montaje para fiesta privada" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-esencial-dj-avian.jpg" alt="Montaje Pack Esencial" loading="lazy"></div>
-      <div class="g-item duo hover-color grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-sonido-dj-avian.jpg" alt="Montaje Pack Sonido" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-1-scaled.jpg" alt="DJ Avian pinchando" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-bodas-madrid-11.jpg" alt="Fiesta de boda con DJ Avian" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-deluxe-dj-avian.jpg" alt="Montaje Pack Deluxe" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-fiesta-15-anos-cabina.jpg" alt="Cabina en fiesta de 15 años" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-evento-salon-iluminacion.jpg" alt="Salón con iluminación de fiesta" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2025/12/IMG-20250910-WA0010.jpg" alt="DJ Avian en un evento" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-premium-dj-avian.jpg" alt="Montaje Pack Premium" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/dj-avian-montaje-fiesta-privada.jpg" alt="Montaje para fiesta privada" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-esencial-dj-avian.jpg" alt="Montaje Pack Esencial" loading="lazy"></div>
+      <div class="g-item duo grain"><img src="https://aviandj.com/wp-content/uploads/2026/10/pack-sonido-dj-avian.jpg" alt="Montaje Pack Sonido" loading="lazy"></div>
     </div>
   </div>
 </section>
@@ -693,7 +813,7 @@
 <!-- ============ DUDAS + CONTACTO ============ -->
 <section id="contacto">
   <div class="marquee m-explicit"><div class="track upper explicit"></div></div>
-  <div class="after-img"><div class="frame duo hover-color grain rv"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-1-scaled.jpg" alt="DJ Avian pinchando" loading="lazy"></div></div>
+  <div class="after-img"><div class="frame duo grain rv"><img src="https://aviandj.com/wp-content/uploads/2025/12/dj-avian-1-scaled.jpg" alt="DJ Avian pinchando" loading="lazy"></div></div>
 
   <div class="after">
     <div class="rv">
@@ -715,7 +835,7 @@
     </div>
   </div>
 
-  <div class="form-sec">
+  <div class="form-sec" id="reserva">
     <div class="rv">
       <h3 class="upper">Reserva<br>tu fecha</h3>
       <p>Completa el formulario y cuéntanos en los comentarios qué evento organizas. Te ayudamos a elegir el formato de DJ, sonido e iluminación según el espacio, los asistentes y el ambiente que quieras crear.</p>
@@ -762,8 +882,9 @@
 
 <a class="wa-float" href="https://wa.me/34711278162" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg><use href="#i-wa"/></svg></a>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce =matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.getElementById('yr').textContent = new Date().getFullYear();
 
   // --- preloader: counts to 100, then slides up
@@ -812,31 +933,48 @@
 
   const rep = (html, n) => Array(n).fill(html).join('');
   document.getElementById('ratingTrack').innerHTML = rep('<span>★★★★★ 5,0 en Google</span>', 12);
-  document.getElementById('packTrack').innerHTML = rep('<span>Reserva tu fecha</span><span>✦</span>', 10);
+  document.getElementById('packTrack').innerHTML = rep('<a href="#reserva"><span>Reserva tu fecha</span></a><span>✦</span>', 10);
   document.querySelectorAll('.explicit').forEach(el => el.innerHTML = rep('<span>Fiestón garantizado</span>', 16));
   document.getElementById('igTrack').innerHTML = rep('<a href="https://www.instagram.com/avian_dj" target="_blank" rel="noopener"><span>@avian_dj</span></a><a href="https://www.instagram.com/avian_events" target="_blank" rel="noopener"><span>@avian_events</span></a>', 4);
 
-  // --- pack details toggle
-  document.querySelectorAll('.pack button').forEach(b => b.addEventListener('click', () => {
-    const open = b.closest('.pack').classList.toggle('open');
-    b.setAttribute('aria-expanded', open);
-  }));
 
-  // --- video banner: plays only while visible, sound toggle
+  // --- video banner: the YouTube live set plays only while visible; the button toggles its sound
   const live = document.getElementById('liveVideo'), soundBtn = document.getElementById('soundBtn');
-  new IntersectionObserver(([e]) => e.isIntersecting ? live.play().catch(() => {}) : live.pause(), { threshold: .3 }).observe(live);
+  const yt = document.getElementById('ytLive');
+  let ytReady = false, soundOn = false;
+  const ytCmd = (func, args = []) => yt.contentWindow && yt.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args }), '*');
+  // ask the embed to report its state so we know when it is actually playing
+  yt.addEventListener('load', () => yt.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'ytLive', channel: 'widget' }), '*'));
+  addEventListener('message', e => {
+    if (e.source !== yt.contentWindow || typeof e.data !== 'string') return;
+    let d; try { d = JSON.parse(e.data); } catch { return; }
+    if (!ytReady && d.info && d.info.playerState === 1) {
+      ytReady = true; yt.parentElement.classList.add('ready');
+      setTimeout(() => live.pause(), 1300);
+    }
+  });
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { ytCmd('playVideo'); if (!ytReady) live.play().catch(() => {}); }
+    else { ytCmd('pauseVideo'); live.pause(); }
+  }, { threshold: .3 }).observe(live);
   soundBtn.addEventListener('click', () => {
-    live.muted = !live.muted;
-    if (!live.muted) live.play().catch(() => {});
-    soundBtn.classList.toggle('on', !live.muted);
-    document.getElementById('soundTxt').textContent = live.muted ? 'Activar sonido' : 'Silenciar';
+    soundOn = !soundOn;
+    if (soundOn) { ytCmd('unMute'); ytCmd('setVolume', [90]); ytCmd('playVideo'); }
+    else ytCmd('mute');
+    soundBtn.classList.toggle('on', soundOn);
+    document.getElementById('soundTxt').textContent = soundOn ? 'Silenciar' : 'Activar sonido';
+  });
+
+  // --- pack meters: draw the segments from data-v / data-max
+  document.querySelectorAll('.meter dd').forEach(dd => {
+    dd.innerHTML = Array.from({ length: +dd.dataset.max }, (_, i) => `<i${i < +dd.dataset.v ? ' class="on"' : ''}></i>`).join('');
   });
 
   // --- reveal on scroll
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }), { threshold: .15 });
-  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+  document.querySelectorAll('.rv, .giant').forEach(el => io.observe(el));
 
   // service rows light up as they reach the middle of the screen
   const io2 = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('in', e.isIntersecting)),
@@ -845,25 +983,42 @@
 
   // --- scroll-driven effects
   const heroLogo = document.getElementById('heroLogo');
+  const heroFade = document.querySelectorAll('.hero-sub, .scroll-ind');
   const scalers = [...document.querySelectorAll('.scaler')];
-  const gallery = document.getElementById('galeria'), gTrack = document.getElementById('gTrack');
-  const gItems = gTrack.children, gCount = document.getElementById('gCount');
-  document.getElementById('gTotal').textContent = String(gItems.length).padStart(2, '0');
+  const features = [...document.querySelectorAll('.feature')];
+  const svcPin = document.getElementById('svcPin'), svcPhotos = document.getElementById('svcPhotos'), svcTitle = document.getElementById('svcTitle');
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  let svcP = 0; // 0 → 1 while the servicios stage is pinned
+  const phone = matchMedia('(max-width: 640px)');
+  const packsPin = document.getElementById('packsPin'), packsRow = packsPin.querySelector('.packs'), packsDots = document.getElementById('packsDots');
+  const packCards = [...packsRow.children];
+  packsDots.innerHTML = packCards.map(() => '<i></i>').join('');
 
   function onScroll() {
     const vh = innerHeight, y = scrollY;
-    // pinned horizontal gallery (also works with reduced motion: it's driven by the user's own scroll)
-    const gr = gallery.getBoundingClientRect();
-    const gp = clamp(-gr.top / (gr.height - vh), 0, 1);
-    const maxX = gTrack.scrollWidth - innerWidth;
-    gTrack.style.transform = `translateX(${-maxX * gp}px)`;
-    gCount.textContent = String(Math.min(gItems.length, Math.floor(gp * gItems.length) + 1)).padStart(2, '0');
+    // servicios: the photos cross the screen while the stage is pinned (driven by the user's own scroll)
+    const sr = svcPin.getBoundingClientRect();
+    svcP = clamp(-sr.top / (sr.height - vh), 0, 1);
+    const px = innerWidth - (innerWidth + svcPhotos.offsetWidth) * clamp((svcP - .08) / .84, 0, 1);
+    svcPhotos.style.transform = `translate(${px}px, -50%)`;
+
+    // packs on phones: each card holds, then slides to the next one
+    if (phone.matches) {
+      const pr = packsPin.getBoundingClientRect();
+      const s = clamp(-pr.top / (pr.height - vh), 0, 1) * (packCards.length - 1);
+      const i = Math.min(Math.floor(s), packCards.length - 2), f = clamp((s - i - .3) / .4, 0, 1);
+      const step = packCards[1].offsetLeft - packCards[0].offsetLeft;
+      packsRow.style.transform = `translateX(${-(i + f * f * (3 - 2 * f)) * step}px)`;
+      const cur = Math.round(i + f);
+      [...packsDots.children].forEach((d, k) => d.classList.toggle('on', k === cur));
+    } else packsRow.style.transform = '';
 
     if (reduce) return;
+    svcTitle.style.transform = `scale(${.35 + clamp(1 - sr.top / vh, 0, 1) * .65})`;
     const p = Math.min(y / vh, 1);
     heroLogo.style.transform = `scale(${1 + p * .6})`;
     heroLogo.style.opacity = 1 - p * 1.1;
+    heroFade.forEach(el => el.style.opacity = 1 - p * 1.4);
     scalers.forEach(h => {
       const r = h.closest('.band-wrap').getBoundingClientRect();
       const t = clamp(1 - r.top / vh, 0, 1);
@@ -872,6 +1027,14 @@
       const q = Math.max(0, -r.top / vh - .6);
       h.style.opacity = 1 - Math.min(q * 1.2, .85);
     });
+    // experiencias: as the next card slides up, the one underneath sinks back
+    features.forEach((f, i) => {
+      const next = features[i + 1];
+      if (!next) return;
+      const q = clamp(1 - next.getBoundingClientRect().top / vh, 0, 1);
+      f.style.transform = q ? `scale(${1 - q * .1})` : '';
+      f.style.filter = q ? `brightness(${1 - q * .6})` : '';
+    });
   }
   let ticking = false;
   addEventListener('scroll', () => {
@@ -879,6 +1042,247 @@
   }, { passive: true });
   addEventListener('resize', onScroll);
   onScroll();
+
+  // --- gallery: drifts on its own, can be dragged/swiped, arrows step one photo at a time
+  (function () {
+    const view = document.getElementById('gView'), track = document.getElementById('gTrack'), count = document.getElementById('gCount');
+    const n = track.children.length;
+    [...track.children].forEach((el, i) => el.classList.toggle('wide', i % 3 === 1));
+    // a second copy of the photos makes the loop seamless
+    track.insertAdjacentHTML('beforeend', track.innerHTML);
+    [...track.children].slice(n).forEach(el => el.setAttribute('aria-hidden', 'true'));
+    document.getElementById('gTotal').textContent = String(n).padStart(2, '0');
+
+    let starts = [], setW = 1, x = 0, target = null, drag = null, hover = false, idleUntil = 0, last = 0, raf = 0;
+    const measure = () => {
+      const kids = [...track.children];
+      starts = kids.map(k => k.offsetLeft - kids[0].offsetLeft);
+      setW = starts[n];
+    };
+    const pad = () => innerWidth <= 640 ? 16 : 28;
+    const indexAt = pos => { let i = 0; while (i < n - 1 && starts[i + 1] <= pos + 20) i++; return i; };
+    // move everything by one full set so x stays in (-setW, 0]
+    const shift = d => { x += d; if (target !== null) target += d; if (drag) drag.x0 += d; };
+
+    function step(dir) {
+      const pos = -(target ?? x), i = indexAt(pos);
+      const k = dir > 0 ? i + 1 : (pos - starts[i] > 20 ? i : i - 1);
+      target = -(k < 0 ? starts[k + n] - setW : starts[k]);
+      idleUntil = performance.now() + 4000;
+    }
+    document.getElementById('gNext').addEventListener('click', () => step(1));
+    document.getElementById('gPrev').addEventListener('click', () => step(-1));
+
+    function frame(now) {
+      const dt = Math.min((now - last) / 1000, .05); last = now;
+      if (!drag) {
+        if (target !== null) {
+          x += (target - x) * Math.min(1, dt * 10);
+          if (Math.abs(target - x) < .5) { x = target; target = null; }
+        } else if (!hover && !reduce && now > idleUntil) x -= 40 * dt;
+      }
+      if (x > 0) shift(-setW);
+      if (x <= -setW) shift(setW);
+      track.style.transform = `translateX(${x + pad()}px)`;
+      count.textContent = String(indexAt(-x) + 1).padStart(2, '0');
+      raf = requestAnimationFrame(frame);
+    }
+
+    view.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
+    view.addEventListener('pointerleave', () => { hover = false; });
+    view.addEventListener('pointerdown', e => {
+      drag = { cx: e.clientX, x0: x }; target = null;
+      view.setPointerCapture(e.pointerId); view.classList.add('dragging');
+    });
+    view.addEventListener('pointermove', e => { if (drag) x = drag.x0 + e.clientX - drag.cx; });
+    const endDrag = () => {
+      if (!drag) return;
+      drag = null; view.classList.remove('dragging');
+      idleUntil = performance.now() + 2500;
+    };
+    view.addEventListener('pointerup', endDrag);
+    view.addEventListener('pointercancel', endDrag);
+
+    measure();
+    addEventListener('resize', measure);
+    // only animate while the gallery is on screen
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
+      else if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
+    }).observe(view);
+  })();
+
+  // --- 3D DJ controller: pops in where the hero logo faded, flies across the screen with the scroll, leaves before servicios
+  (function () {
+    const canvas = document.getElementById('mixer');
+    if (!window.THREE) { canvas.remove(); return; }
+    const T = THREE;
+    const renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.outputEncoding = T.sRGBEncoding;
+    renderer.toneMapping = T.ACESFilmicToneMapping;
+    const scene = new T.Scene();
+    const camera = new T.PerspectiveCamera(30, 1, .1, 100);
+    camera.position.set(0, 0, 11);
+
+    scene.add(new T.HemisphereLight(0x8fbaff, 0x050507, .7));
+    const key = new T.DirectionalLight(0xffffff, 1.3); key.position.set(3, 6, 5); scene.add(key);
+    const rim = new T.DirectionalLight(0x168bff, 2.4); rim.position.set(-5, 2, -4); scene.add(rim);
+    const fill = new T.PointLight(0x4db3ff, 1.2, 20); fill.position.set(0, 3, 4); scene.add(fill);
+
+    const std = (color, metalness, roughness, extra) => new T.MeshStandardMaterial(Object.assign({ color, metalness, roughness }, extra));
+    const M = {
+      body: std(0x15151a, .6, .45), plate: std(0x2a2c33, .8, .35), rubber: std(0x0b0b0e, .1, .9),
+      chrome: std(0xc9ccd4, 1, .25), white: std(0xf5f5f7, 0, .5),
+      led: std(0x168bff, 0, .4, { emissive: 0x168bff, emissiveIntensity: 1.6 }),
+    };
+    const canvasTex = (size, draw) => {
+      const c = document.createElement('canvas'); c.width = c.height = size;
+      draw(c.getContext('2d'), size);
+      const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4; return t;
+    };
+    const roundedRect = (w, d, r) => {
+      const s = new T.Shape(), x = -w / 2, y = -d / 2;
+      s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+      s.lineTo(x + w, y + d - r); s.quadraticCurveTo(x + w, y + d, x + w - r, y + d);
+      s.lineTo(x + r, y + d); s.quadraticCurveTo(x, y + d, x, y + d - r);
+      s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+      return s;
+    };
+    const slab = (w, d, r, h, mat, bevel) => {
+      const g = new T.ExtrudeGeometry(roundedRect(w, d, r), { depth: h, bevelEnabled: !!bevel, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3, curveSegments: 8 });
+      g.rotateX(-Math.PI / 2);
+      return new T.Mesh(g, mat);
+    };
+    const add = (parent, geo, mat, x, y, z) => { const m = new T.Mesh(geo, mat); m.position.set(x, y, z); parent.add(m); return m; };
+
+    const rig = new T.Group(), unit = new T.Group();
+    rig.add(unit); scene.add(rig);
+    unit.add(slab(4.6, 2.6, .22, .22, M.body, .05));
+    const TOP = .3;
+    const plate = slab(4.4, 2.4, .16, .02, M.plate); plate.position.y = TOP - .02; unit.add(plate);
+
+    // jog-wheel artwork: grooves + a marker line; the centre cap carries the logo
+    const grooves = canvasTex(512, (g, s) => {
+      g.fillStyle = '#0c0c10'; g.fillRect(0, 0, s, s);
+      for (let r = s / 2; r > s * .18; r -= 5) { g.strokeStyle = r % 10 ? '#1a1a22' : '#121218'; g.lineWidth = 2; g.beginPath(); g.arc(s / 2, s / 2, r, 0, 7); g.stroke(); }
+      g.fillStyle = '#4db3ff'; g.fillRect(s / 2 - 5, 8, 10, s * .3);
+    });
+    const logo = canvasTex(256, (g, s) => {
+      g.fillStyle = '#168bff'; g.fillRect(0, 0, s, s);
+      g.fillStyle = '#fff'; g.font = '900 58px Inter, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('AVIAN', s / 2, s / 2);
+    });
+    const platterMats = [M.rubber, std(0xffffff, .2, .7, { map: grooves }), M.rubber];
+    const capMats = [M.chrome, std(0xffffff, .3, .4, { map: logo }), M.chrome];
+
+    const platters = [], pads = [], vu = [], faders = [];
+    const padColors = [0x168bff, 0x4db3ff, 0x3b29ff, 0x4db3ff];
+    [-1, 1].forEach(side => {
+      const dx = side * 1.3, dz = -.2;
+      add(unit, new T.CylinderGeometry(.68, .7, .05, 64), M.chrome, dx, TOP + .025, dz);
+      const ring = add(unit, new T.TorusGeometry(.66, .018, 8, 96), M.led, dx, TOP + .06, dz);
+      ring.rotation.x = Math.PI / 2;
+      const platter = new T.Group(); platter.position.set(dx, TOP + .09, dz); unit.add(platter);
+      add(platter, new T.CylinderGeometry(.62, .62, .07, 64), platterMats, 0, 0, 0);
+      add(platter, new T.CylinderGeometry(.2, .2, .03, 48), capMats, 0, .045, 0);
+      platters.push(platter);
+      // 2 × 4 performance pads
+      for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++) {
+        const col = padColors[(c + r) % 4];
+        const pad = add(unit, new T.BoxGeometry(.18, .04, .18), std(col, 0, .6, { emissive: col, emissiveIntensity: .3 }), dx - .33 + c * .22, TOP + .02, .78 + r * .24);
+        pads.push(pad);
+      }
+      // play / cue
+      [.78, 1.02].forEach((z, i) => add(unit, new T.CylinderGeometry(.09, .09, .04, 32), i ? M.rubber : std(0x3cff7a, 0, .5, { emissive: 0x3cff7a, emissiveIntensity: .8 }), dx + side * .72, TOP + .02, z));
+      // pitch fader
+      add(unit, new T.BoxGeometry(.05, .01, 1.1), M.rubber, side * 2.08, TOP + .005, -.25);
+      add(unit, new T.BoxGeometry(.16, .07, .1), M.chrome, side * 2.08, TOP + .04, -.25 + side * .15);
+    });
+
+    // mixer section: knobs, VU meters, channel faders, crossfader
+    const knobGeo = new T.CylinderGeometry(.07, .08, .1, 24), tickGeo = new T.BoxGeometry(.015, .012, .06);
+    [-.9, -.62, -.34].forEach((z, i) => [-.22, .22].forEach(x => {
+      const knob = new T.Group(); knob.position.set(x, TOP + .05, z); knob.rotation.y = (i - 1) * .9 + x * 3; unit.add(knob);
+      add(knob, knobGeo, M.rubber, 0, 0, 0);
+      add(knob, tickGeo, M.white, 0, .056, -.04);
+    }));
+    for (let side = -1; side <= 1; side += 2) for (let i = 0; i < 8; i++) {
+      const col = i > 5 ? 0xff3b6b : i > 3 ? 0x4db3ff : 0x168bff;
+      vu.push(add(unit, new T.BoxGeometry(.04, .02, .05), std(col, 0, .5, { emissive: col, emissiveIntensity: 0 }), side * .05, TOP + .01, -.2 - i * .085));
+    }
+    [-.22, .22].forEach(x => {
+      add(unit, new T.BoxGeometry(.04, .01, .62), M.rubber, x, TOP + .005, .55);
+      faders.push(add(unit, new T.BoxGeometry(.14, .08, .09), M.chrome, x, TOP + .045, .55));
+    });
+    add(unit, new T.BoxGeometry(.62, .01, .04), M.rubber, 0, TOP + .005, 1.1);
+    const xfader = add(unit, new T.BoxGeometry(.09, .08, .14), M.chrome, 0, TOP + .045, 1.1);
+    add(unit, new T.CylinderGeometry(.1, .1, .08, 32), M.chrome, 0, TOP + .04, .05);
+    // brand strip along the back edge
+    const brand = canvasTex(512, (g, s) => {
+      g.clearRect(0, 0, s, s); g.fillStyle = '#f5f5f7'; g.font = '900 80px Inter, sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('AVIAN DJ', s / 2, s / 2);
+    });
+    const label = add(unit, new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: brand, transparent: true }), 0, TOP + .002, -1.08);
+    label.rotation.x = -Math.PI / 2;
+    unit.position.y = -TOP / 2;
+
+    let halfW = 1, halfH = 1, fitScale = 1, narrow = false;
+    function resize() {
+      const w = innerWidth, h = innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      halfH = camera.position.z * Math.tan(T.MathUtils.degToRad(camera.fov / 2));
+      halfW = halfH * camera.aspect;
+      narrow = w <= 640;
+      fitScale = Math.min(halfW * 2 * (narrow ? .78 : .5), halfH * 2 * .55) / 4.6;
+    }
+    addEventListener('resize', resize);
+    resize();
+
+    // flight path across the hero, in fractions of half the screen:
+    // centre (where the logo was) → top left → middle right → bottom left → out of frame
+    const path = new T.CatmullRomCurve3([[0, 0], [-.45, .42], [.4, 0], [-.45, -.45], [-1.1, -1.6]].map(([x, y]) => new T.Vector3(x, y, 0)));
+    const ease = t => 1 + 2.7 * Math.pow(t - 1, 3) + 1.7 * Math.pow(t - 1, 2); // ease-out-back
+    // 0 when the hero logo has faded out, 1 just as the servicios title arrives
+    const journey = () => {
+      const y0 = innerHeight * .8, y1 = svcPin.offsetTop - innerHeight * .45;
+      return (scrollY - y0) / (y1 - y0);
+    };
+    let p = -1, raf = 0, t0 = performance.now();
+    function frame(now) {
+      const t = (now - t0) / 1000, target = journey();
+      p = p < -.5 ? target : p + (target - p) * .15; // smooth the scroll value
+      const j = clamp(p, 0, 1);
+      if ((target <= 0 || target >= 1) && Math.abs(target - p) < .002) {
+        renderer.clear(); canvas.style.visibility = 'hidden'; raf = 0; return;
+      }
+      canvas.style.visibility = 'visible';
+      const pt = path.getPoint(j), tan = path.getTangent(j);
+      rig.position.set(pt.x * halfW * (narrow ? .6 : 1), pt.y * halfH, 0);
+      const pop = ease(clamp(j / .12, 0, 1)) * (1 - clamp((j - .85) / .15, 0, 1) * .5);
+      rig.scale.setScalar(Math.max(pop, .0001) * fitScale);
+      // two full turns over the flight, tilting to show the deck and banking into each curve
+      rig.rotation.y = -.5 + j * Math.PI * 4;
+      rig.rotation.x = .55 + Math.sin(j * Math.PI * 2) * .35 + (reduce ? 0 : Math.sin(t * .8) * .04);
+      rig.rotation.z = -tan.x * .35;
+      if (!reduce) {
+        platters.forEach((pl, i) => pl.rotation.y = -t * (i ? 3.4 : 3.2));
+        const beat = t * 128 / 60, pulse = Math.pow(1 - (beat % 1), 3);
+        pads.forEach((pd, i) => pd.material.emissiveIntensity = .25 + ((i + Math.floor(beat)) % 5 === 0 ? pulse * 1.6 : 0));
+        vu.forEach((v, i) => v.material.emissiveIntensity = (i % 8) < (3 + pulse * 5 + (i > 7 ? .8 : 0)) ? 1.4 : .05);
+        faders[0].position.z = .55 + Math.sin(t * .7) * .2;
+        xfader.position.x = Math.sin(t * .45) * .22;
+      }
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(frame);
+    }
+    // only render during the flight
+    const wake = () => { const j = journey(); if (!raf && (j > 0 && j < 1 || (p > 0 && p < 1))) raf = requestAnimationFrame(frame); };
+    addEventListener('scroll', wake, { passive: true });
+    addEventListener('resize', wake);
+    wake();
+  })();
 </script>
 </body>
 </html>
